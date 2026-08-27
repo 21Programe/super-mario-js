@@ -1,0 +1,3 @@
+export const PLAYER_STATES=Object.freeze({IDLE:'Idle',WALK:'Walk',RUN:'Run',JUMP:'Jump',FALL:'Fall',CROUCH:'Crouch',DIE:'Die',POWERUP:'PowerUp'});
+export class StateStore{constructor(){this.data={screen:'menu',world:0,score:Number(localStorage.getItem('jsbros.score')||0),coins:0,lives:Number(localStorage.getItem('jsbros.lives')||3),time:300,muted:localStorage.getItem('jsbros.muted')==='1',checkpoint:null};this.listeners=[]}set(p){Object.assign(this.data,p);this.listeners.forEach(fn=>fn(this.data))}save(){localStorage.setItem('jsbros.score',String(this.data.score));localStorage.setItem('jsbros.lives',String(this.data.lives));localStorage.setItem('jsbros.muted',this.data.muted?'1':'0')}on(fn){this.listeners.push(fn)}}
+export const state=new StateStore();
