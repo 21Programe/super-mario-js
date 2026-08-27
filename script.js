@@ -3,114 +3,67 @@ import { state } from './state.js';
 import { AssetLoader } from './asset-loader.js';
 
 let game = null;
-let assets = null;
-let bootPromise = null;
+let loader = null;
 
-function setLoading(percent, label) {
-  const bar = document.getElementById('loadBar');
-  const text = document.getElementById('loadLabel');
-  if (bar) bar.style.width = `${Math.round(percent * 100)}%`;
-  if (text) text.textContent = `${label || 'CARREGANDO'} ${Math.round(percent * 100)}%`;
+function showScreen(){
+  const screen=state.data.screen;
+  const map={menu:'menu',pause:'pause',gameover:'gameOver',victory:'victory'};
+  for(const [name,id] of Object.entries(map)){const el=document.getElementById(id);if(el)el.classList.toggle('hidden',screen!==name)}
+  const loading=document.getElementById('loading');
+  if(loading)loading.classList.toggle('hidden',screen!=='loading');
 }
 
-function showScreen() {
-  const map = { menu: 'menu', pause: 'pause', gameover: 'gameOver', victory: 'victory' };
-  for (const [key, id] of Object.entries(map)) {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('hidden', state.data.screen !== key);
-  }
-}
-
-function hideLoading() {
-  const el = document.getElementById('loading');
-  if (el) el.classList.add('hidden');
-}
-
-async function boot() {
-  if (game) return game;
-  if (bootPromise) return bootPromise;
-  bootPromise = (async () => {
-    const canvas = document.getElementById('gameCanvas');
-    if (!canvas) throw new Error('Canvas #gameCanvas não encontrado.');
-    setLoading(0, 'PREPARANDO ASSETS');
-    assets = await new AssetLoader(undefined, (p, label) => setLoading(p, `ASSET ${String(label).toUpperCase()}`)).load();
-    game = new Game(canvas);
-    if (typeof game.renderer.setAssets === 'function') game.renderer.setAssets(assets);
-    window.SuperJSBros = { game, state, assets };
-    hideLoading();
-    const start = document.getElementById('startBtn');
-    if (start) start.disabled = false;
-    return game;
-  })();
-  try { return await bootPromise; }
-  catch (error) {
-    console.error('[Super JS Bros] boot error:', error);
-    setLoading(1, 'FALHA AO CARREGAR');
-    const label = document.getElementById('loadLabel');
-    if (label) label.textContent = 'ASSETS OPCIONAIS INDISPONÍVEIS — RECARREGUE A PÁGINA';
-    bootPromise = null;
-    throw error;
-  }
-}
-
-async function startGame() {
-  try {
-    const g = await boot();
-    g.start();
-  } catch (error) {
-    console.error('[Super JS Bros] start error:', error);
-    const menu = document.getElementById('menu');
-    if (menu) {
-      hideLoading();
-      menu.classList.remove('hidden');
-      let msg = menu.querySelector('[data-error]');
-      if (!msg) {
-        msg = document.createElement('div');
-        msg.dataset.error = '1';
-        msg.style.cssText = 'margin-top:12px;color:#ff8080;font:700 12px monospace';
-        menu.appendChild(msg);
-      }
-      msg.textContent = 'Falha ao iniciar. Recarregue a página.';
-    }
-  }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  document.getElementById('startBtn')?.addEventListener('click', startGame);
-  document.getElementById('restartBtn')?.addEventListener('click', startGame);
-  document.getElementById('resumeBtn')?.addEventListener('click', async () => {
-    const g = await boot();
-    if (!g.world) return g.start();
-    state.set({ screen: 'playing' });
-    g.running = true;
-    g.last = performance.now();
-    requestAnimationFrame(t => g.loop(t));
+async function boot(){
+  if(game)return game;
+  const canvas=document.getElementById('gameCanvas');
+  if(!canvas)throw new Error('Canvas #gameCanvas não encontrado.');
+  loader=new AssetLoader((p,label)=>{
+    const bar=document.getElementById('loadBar');
+    const text=document.getElementById('loadLabel');
+    if(bar)bar.style.width=`${Math.round(p*100)}%`;
+    if(text)text.textContent=`CARREGANDO ${String(label||'ASSETS').toUpperCase()} ${Math.round(p*100)}%`;
   });
-  document.getElementById('nextBtn')?.addEventListener('click', async () => {
-    const g = await boot();
-    g.levelIndex = Math.min(g.levelIndex + 1, 2);
+  await loader.load();
+  game=new Game(canvas);
+  game.renderer.setAssets(loader);
+  window.SuperJSBros={game,state,assets:loader};
+  return game;
+}
+
+async function startGame(){
+  const button=document.getElementById('startBtn');
+  try{
+    if(button)button.disabled=true;
+    state.data.screen='loading';showScreen();
+    const g=await boot();
     g.start();
-  });
-  try { await boot(); } catch (_) {}
+  }catch(error){
+    console.error('[Super JS Bros] start error:',error);
+    state.data.screen='menu';showScreen();
+    const menu=document.getElementById('menu');
+    if(menu){let msg=menu.querySelector('[data-error]');if(!msg){msg=document.createElement('div');msg.dataset.error='1';msg.style.cssText='margin-top:12px;color:#ff8080;font:700 12px monospace';menu.appendChild(msg)}msg.textContent='Erro ao iniciar: '+error.message}
+  }finally{if(button)button.disabled=false}
+}
+
+document.addEventListener('DOMContentLoaded',async()=>{
   showScreen();
+  const start=document.getElementById('startBtn');
+  if(start){start.disabled=false;start.addEventListener('click',startGame)}
+  document.getElementById('restartBtn')?.addEventListener('click',startGame);
+  document.getElementById('resumeBtn')?.addEventListener('click',()=>game?.resume());
+  document.getElementById('nextBtn')?.addEventListener('click',()=>{if(game){game.levelIndex=Math.min(game.levelIndex+1,2);game.start()}});
 });
 
-window.addEventListener('keydown', e => {
-  if (!game) return;
-  if (e.code === 'Escape') {
-    if (state.data.screen === 'playing') state.set({ screen: 'pause' });
-    else if (state.data.screen === 'pause') state.set({ screen: 'playing' });
+window.addEventListener('keydown',e=>{
+  if(!game)return;
+  if(e.code==='Escape'){
+    if(state.data.screen==='playing')state.set({screen:'pause'});
+    else if(state.data.screen==='pause')game.resume();
   }
-  if (e.code === 'KeyM') {
-    state.data.muted = !state.data.muted;
-    state.save();
-    game.audio.setMuted(state.data.muted);
-    if (!state.data.muted) game.audio.startMusic();
-    else game.audio.stopMusic();
+  if(e.code==='KeyM'){
+    state.data.muted=!state.data.muted;state.save();
+    try{game.audio.setMuted(state.data.muted);if(!state.data.muted)game.audio.startMusic();else game.audio.stopMusic()}catch{}
   }
 });
 
-state.on(() => {
-  if (game) game.render();
-  showScreen();
-});
+state.on(()=>{if(game)game.render();showScreen()});
