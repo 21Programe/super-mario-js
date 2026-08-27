@@ -1,70 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super JS Bros</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Super JS Bros — Ultra Edition</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-        <div id="game-wrapper">
-            <!-- HUD -->
-            <div id="hud">
-                <div class="hud-col">
-                    <span>MARIO</span>
-                    <span id="scoreDisplay" class="hud-val">000000</span>
-                </div>
-                <div class="hud-col">
-                    <span>COINS</span>
-                    <span id="coinDisplay" class="hud-val">x00</span>
-                </div>
-                <div class="hud-col">
-                    <span>WORLD</span>
-                    <span class="hud-val">1-1</span>
-                </div>
-            </div>
-
-            <!-- Canvas -->
-            <canvas id="gameCanvas"></canvas>
-
-            <!-- Touch Controls (Mobile Only) -->
-            <div id="touch-controls">
-                <div class="dir-pad">
-                    <div id="btn-left" class="btn-dir">◄</div>
-                    <div id="btn-right" class="btn-dir">►</div>
-                </div>
-                <div id="btn-jump" class="btn-action">▲</div>
-            </div>
-
-            <!-- Start Screen -->
-            <div id="startScreen" class="screen">
-                <h1>SUPER<br>JS BROS</h1>
-                <div class="subtitle">HTML5 PLATFORMER</div>
-                <button id="startBtn">PLAY GAME</button>
-                <div class="controls-info">
-                    Desktop: <span>Arrows/WASD</span> to Move | <span>Space</span> to Jump<br>
-                    Mobile: Use <span>Touch Buttons</span> on screen
-                </div>
-            </div>
-
-            <!-- Game Over Screen -->
-            <div id="gameOverScreen" class="screen hidden">
-                <h1>GAME OVER</h1>
-                <div class="subtitle" id="finalScoreText">SCORE: 0</div>
-                <button id="restartBtn">TRY AGAIN</button>
-            </div>
-
-            <!-- Victory Screen -->
-            <div id="victoryScreen" class="screen hidden">
-                <h1 style="color: #FBD000;">COURSE CLEAR!</h1>
-                <div class="subtitle" id="victoryScoreText">SCORE: 0</div>
-                <button id="nextLevelBtn">PLAY AGAIN</button>
-            </div>
-        </div>
-    </div>
-    
-    <script src="script.js"></script>
+<main id="game-wrapper">
+  <canvas id="gameCanvas" aria-label="Jogo Super JS Bros"></canvas>
+  <header id="hud">
+    <div><b>WORLD</b><span id="worldDisplay">1-1</span></div>
+    <div><b>SCORE</b><span id="scoreDisplay">000000</span></div>
+    <div><b>COINS</b><span id="coinDisplay">x00</span></div>
+    <div><b>TIME</b><span id="timeDisplay">300</span></div>
+    <div><b>LIVES</b><span id="livesDisplay">x03</span></div>
+  </header>
+  <section id="menu" class="screen">
+    <h1>SUPER JS BROS</h1><p>ULTRA EDITION</p>
+    <button id="startBtn">JOGAR</button>
+    <small>Setas / WASD • Espaço = pular • Shift = correr • Gamepad • Touch</small>
+  </section>
+  <section id="pause" class="screen hidden"><h2>PAUSADO</h2><button id="resumeBtn">CONTINUAR</button></section>
+  <section id="gameOver" class="screen hidden"><h2>GAME OVER</h2><button id="restartBtn">TENTAR NOVAMENTE</button></section>
+  <section id="victory" class="screen hidden"><h2>FASE CONCLUÍDA!</h2><button id="nextBtn">PRÓXIMA FASE</button></section>
+  <div id="touch-controls"><button id="btn-left">◀</button><button id="btn-right">▶</button><button id="btn-run">●</button><button id="btn-jump">▲</button></div>
+</main>
+<script type="module" src="script.js"></script>
 </body>
 </html>
