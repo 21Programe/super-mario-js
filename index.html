@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super JS Bros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <div id="game-wrapper">
+            <!-- HUD -->
+            <div id="hud">
+                <div class="hud-col">
+                    <span>MARIO</span>
+                    <span id="scoreDisplay" class="hud-val">000000</span>
+                </div>
+                <div class="hud-col">
+                    <span>COINS</span>
+                    <span id="coinDisplay" class="hud-val">x00</span>
+                </div>
+                <div class="hud-col">
+                    <span>WORLD</span>
+                    <span class="hud-val">1-1</span>
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <canvas id="gameCanvas"></canvas>
+
+            <!-- Touch Controls (Mobile Only) -->
+            <div id="touch-controls">
+                <div class="dir-pad">
+                    <div id="btn-left" class="btn-dir">◄</div>
+                    <div id="btn-right" class="btn-dir">►</div>
+                </div>
+                <div id="btn-jump" class="btn-action">▲</div>
+            </div>
+
+            <!-- Start Screen -->
+            <div id="startScreen" class="screen">
+                <h1>SUPER<br>JS BROS</h1>
+                <div class="subtitle">HTML5 PLATFORMER</div>
+                <button id="startBtn">PLAY GAME</button>
+                <div class="controls-info">
+                    Desktop: <span>Arrows/WASD</span> to Move | <span>Space</span> to Jump<br>
+                    Mobile: Use <span>Touch Buttons</span> on screen
+                </div>
+            </div>
+
+            <!-- Game Over Screen -->
+            <div id="gameOverScreen" class="screen hidden">
+                <h1>GAME OVER</h1>
+                <div class="subtitle" id="finalScoreText">SCORE: 0</div>
+                <button id="restartBtn">TRY AGAIN</button>
+            </div>
+
+            <!-- Victory Screen -->
+            <div id="victoryScreen" class="screen hidden">
+                <h1 style="color: #FBD000;">COURSE CLEAR!</h1>
+                <div class="subtitle" id="victoryScoreText">SCORE: 0</div>
+                <button id="nextLevelBtn">PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
