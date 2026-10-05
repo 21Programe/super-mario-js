@@ -10,7 +10,6 @@ Refatoração orientada a estado do jogo HTML5/Canvas.
 - `audio.js`: Web Audio polifônico, música em loop e SFX simultâneos.
 - `state.js`: estado global e persistência Local Storage.
 - `levels.js`: fases declarativas em matrizes de dados.
-- `enhancements.js`: módulo experimental de extensões; não é carregado pelo bootstrap atual.
 - `script.js`: bootstrap mínimo.
 
 ## Controles
