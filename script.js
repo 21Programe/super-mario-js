@@ -17,7 +17,7 @@ async function boot(){
   if(game)return game;
   const canvas=document.getElementById('gameCanvas');
   if(!canvas)throw new Error('Canvas #gameCanvas não encontrado.');
-  loader=new AssetLoader((p,label)=>{
+  loader=new AssetLoader(undefined,(p,label)=>{
     const bar=document.getElementById('loadBar');
     const text=document.getElementById('loadLabel');
     if(bar)bar.style.width=`${Math.round(p*100)}%`;
